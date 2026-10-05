@@ -16,6 +16,7 @@ export default defineConfig({
       disable404Route: true,
       description: 'Inspect media, review an acquisition plan, and download on Linux.',
       favicon: '/branding/favicon.svg',
+      logo: { src: '../assets/branding/opendownloader-icon.svg', alt: '', replacesTitle: false },
       customCss: ['./src/styles/docs.css'],
       components: { Header: './src/components/DocsHeader.astro' },
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/Dyu20705/openDownloader' }],

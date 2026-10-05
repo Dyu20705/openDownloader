@@ -3,6 +3,6 @@ import { path, repository } from '../lib';
 const links = [['Download', 'download/'], ['Docs', 'docs/'], ['Security', 'security/'], ['Releases', 'releases/']];
 ---
 <nav aria-label="Main navigation" class="site-nav">
-  <a class="brand" href={path()}><span aria-hidden="true" class="brand-mark">↓</span> openDownloader</a>
+  <a class="brand" href={path()}><img aria-hidden="true" class="brand-mark" src={path('branding/favicon.svg')} alt="" width="28" height="28" /> openDownloader</a>
   <div class="nav-links">{links.map(([label, route]) => <a href={path(route)} aria-current={Astro.url.pathname === path(route) ? 'page' : undefined}>{label}</a>)}<a href={repository}>GitHub <span aria-hidden="true">↗</span></a></div>
 </nav>

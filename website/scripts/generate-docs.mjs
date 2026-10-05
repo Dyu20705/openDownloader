@@ -3,6 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { mapping, transform } from './content.mjs';
 import { unavailable } from './release.mjs';
+import { generateBranding } from './branding.mjs';
+await generateBranding();
 const root = new URL('../../', import.meta.url);
 const destination = new URL('../src/content/docs/', import.meta.url);
 const tracked = new Set(execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { cwd: fileURLToPath(root), encoding: 'utf8' }).trim().split('\n'));
