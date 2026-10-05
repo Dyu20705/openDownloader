@@ -1,0 +1,94 @@
+name: Website checks and Pages
+
+on:
+  pull_request:
+    paths: &website-paths
+      - 'website/**'
+      - 'docs/**'
+      - 'README.md'
+      - 'PRIVACY.md'
+      - 'SECURITY.md'
+      - 'CHANGELOG.md'
+      - 'THIRD_PARTY_NOTICES.md'
+      - 'LICENSE'
+      - '.github/workflows/pages.yml'
+  push:
+    branches: [main]
+    paths: *website-paths
+  workflow_dispatch:
+  workflow_run: # zizmor: ignore[dangerous-triggers] -- Required release refresh: only successful tag pushes, trusted main checkout, no upstream artifacts, read-only build.
+    workflows: ['Signed Linux release']
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The release workflow accepts tag pushes only. Manual GPG preflights
+    # use workflow_dispatch and must not refresh this website.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Checkout PR code or trusted main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+          persist-credentials: false
+      - name: Install pinned Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - name: Install locked website dependencies
+        run: npm ci --no-audit --fund=false
+      - name: Acquire release metadata once
+        run: npm run release:fetch
+      - name: Typecheck
+        run: npm run check
+      - name: Test generation and release contract
+        run: npm test
+      - name: Build and inspect static output
+        run: npm run build && npm run check:links
+      - name: Confirm deterministic output with the same metadata
+        run: |
+          set -eu
+          cp -R dist "$RUNNER_TEMP/website-first-build"
+          npm run build
+          diff -r "$RUNNER_TEMP/website-first-build" dist
+      - name: Configure Pages
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - name: Upload static Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: website/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
