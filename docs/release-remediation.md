@@ -1,18 +1,30 @@
 # v1.0.0 final security disposition
 
-> **Release-scope note (2026-10-03):** this document records the v1.0.0 security disposition and remains historical evidence. The current production packaging scope is Linux x86_64 only; Windows/macOS are unsigned CI portability targets. The two RustSec exceptions below remain scoped to v1.0.0 and must be re-evaluated before any later version. See [packaging.md](packaging.md) for the active release contract.
+> **Release-scope note (updated 2026-10-05):** this document preserves the original v1.0.0 disposition and records the explicit v1.1.0 re-evaluation. Production packaging remains Linux x86_64 only; Windows/macOS are unsigned CI portability targets. Exactly two RustSec exceptions are approved for v1.1.0 and no later version inherits them. See [packaging.md](packaging.md) for the active release contract.
 
 The final engineering pass starts from `faee83087709800a5f71dbc84a41e4c4f9120edd` on `release/1.0.0-production-hardening`, confirmed against the fetched remote and PR #6. The owner explicitly accepted the two upstream advisory exceptions below for v1.0.0. Engineering validation is separate from final human acceptance, merge, tag creation, and signed release verification.
+
+## v1.1.0 waiver re-evaluation — 2026-10-05
+
+The owner explicitly approved carrying forward exactly `RUSTSEC-2024-0370` and `RUSTSEC-2024-0429` for v1.1.0 after re-evaluation. This is not a general waiver:
+
+- `RUSTSEC-2024-0370` remains an informational unmaintained advisory with no patched version in the RustSec advisory database.
+- `RUSTSEC-2024-0429` is fixed in `glib >=0.20.0`, but the current stable Tauri 2.12.1 Linux manifest still depends on GTK 0.18, which retains the affected GLib 0.18 line. A compatible stable Tauri bump therefore does not remove this dependency path.
+- Core remains exception-free; the host ignores only these two IDs; every other cargo-audit warning/advisory remains denied.
+- Any version after v1.1.0 returns to strict audit unless a new evidence-backed owner decision is recorded.
+
+Sources: [RUSTSEC-2024-0370](https://rustsec.org/advisories/RUSTSEC-2024-0370.html), [RUSTSEC-2024-0429](https://rustsec.org/advisories/RUSTSEC-2024-0429.html), [Tauri 2.12.1 manifest](https://docs.rs/crate/tauri/2.12.1/source/Cargo.toml).
+
 
 ## RustSec disposition
 
 PR/scheduled and release checks invoke the same repository-owned `scripts/ci/audit-rust.sh` with cargo-audit 0.22.2. It uses `set -euo pipefail`, retains `--deny warnings`, and leaves yanked-package checks enabled. Core has zero exceptions. Host ignores exactly RUSTSEC-2024-0370 and RUSTSEC-2024-0429; every other warning/advisory remains denied. No framework migration, vendored relabelling, lockfile hand-edit, or broad ignore is used.
 
-**PASS with two documented v1.0.0 upstream advisory exceptions** is the accepted audit disposition. These exceptions do not mean the dependency graph is advisory-free.
+**PASS for v1.1.0 with exactly two re-evaluated upstream advisory exceptions** is the accepted audit disposition. These exceptions do not mean the dependency graph is advisory-free.
 
 ### RUSTSEC-2024-0370 — proc-macro-error 1.0.4
 
-This is an informational/unmaintained advisory with no patched version. The current inverse dependency tree leads through `tauri 2.11.5 → gtk 0.18.2 → gtk3-macros 0.18.2 → proc-macro-error`, and through `gtk → glib 0.18.5 → glib-macros 0.18.5 → proc-macro-error`. It is a transitive GTK/glib procedural-macro build-time dependency rather than application runtime functionality. Replacement requires upstream GTK/glib macro migration. Its maintenance risk is accepted for v1.0.0 only.
+This is an informational/unmaintained advisory with no patched version. The current inverse dependency tree leads through `tauri 2.11.5 → gtk 0.18.2 → gtk3-macros 0.18.2 → proc-macro-error`, and through `gtk → glib 0.18.5 → glib-macros 0.18.5 → proc-macro-error`. It is a transitive GTK/glib procedural-macro build-time dependency rather than application runtime functionality. Replacement requires upstream GTK/glib macro migration. Its maintenance risk was accepted for v1.0.0 and was explicitly re-accepted for v1.1.0 on 2026-10-05; it does not carry forward beyond v1.1.0.
 
 ### RUSTSEC-2024-0429 — glib 0.18.5
 
@@ -20,9 +32,9 @@ This is an actual unsoundness advisory affecting `VariantStrIter` iteration, wit
 
 The upstream fix starts at glib 0.20.0. Inspection of the current official Cargo registry metadata and published manifest confirms the latest stable compatible Tauri 2.12.1 still requires GTK 0.18 and WebKitGTK 2; GTK 0.18 requires glib 0.18. A compatible stable Tauri upgrade therefore does not eliminate either accepted advisory. A direct glib 0.20 dependency would coexist with the affected version rather than replace it.
 
-Application/static source inspection found no direct use of `VariantStrIter` or `array_iter_str` in the application core/host or the inspected Tauri, GTK, GDK, GIO, Tao, and Wry sources. This is risk reduction evidence, NOT proof of complete unreachability. The Linux runtime still includes the affected library. This residual risk is accepted for v1.0.0 rather than introducing an unstable framework migration immediately before release. Any Linux smoke-test failure attributable to this GLib behavior invalidates the waiver and blocks release.
+Application/static source inspection found no direct use of `VariantStrIter` or `array_iter_str` in the application core/host or the inspected Tauri, GTK, GDK, GIO, Tao, and Wry sources. This is risk reduction evidence, NOT proof of complete unreachability. The Linux runtime still includes the affected library. This residual risk was re-evaluated and explicitly accepted for v1.1.0 rather than introducing an unstable framework migration immediately before release. Any Linux smoke-test failure attributable to this GLib behavior invalidates the waiver and blocks release.
 
-Any future openDownloader release must re-evaluate and remove these waivers if the upstream Tauri/GTK dependency graph permits it.
+Any release after v1.1.0 must re-evaluate and remove these waivers if the upstream Tauri/GTK dependency graph permits it.
 
 Sources: [GLib advisory and fixed versions](https://rustsec.org/advisories/RUSTSEC-2024-0429), [proc-macro-error advisory](https://rustsec.org/advisories/RUSTSEC-2024-0370), [official Tauri registry metadata](https://index.crates.io/ta/ur/tauri), [Tauri 2.12.1 dependencies](https://docs.rs/crate/tauri/2.12.1/source/Cargo.toml), [Tauri upstream GLib upgrade discussion](https://github.com/tauri-apps/tauri/issues/12564).
 
@@ -56,7 +68,7 @@ Node 24.21.0 and Rust 1.96.0 match the workflow versions. Checks below record lo
 | Clippy | PASS | Both manifests, all targets, `-D warnings`; core release profile also passes |
 | Host check and metadata | PASS | Locked cargo check and no-dependency metadata |
 | Strict core audit | PASS | No exceptions; warning denial and yanked-package checks retained |
-| Host audit | PASS with two documented v1.0.0 upstream advisory exceptions | Only RUSTSEC-2024-0370 and RUSTSEC-2024-0429; all other findings denied |
+| Host audit | PASS with exactly two documented v1.1.0 upstream advisory exceptions | Only RUSTSEC-2024-0370 and RUSTSEC-2024-0429; all other findings denied |
 | actionlint, workflow structure, ShellCheck | PASS | Pinned actionlint 1.7.12; exact-SHA dependency and package matrix checks; all repository shell scripts |
 | zizmor | PASS | CI version 1.30.1, offline, default configuration; no new suppressions |
 | Gitleaks | PASS | CI version 8.30.1: base-to-head commit scan plus all tracked working-tree files and new source files |
@@ -73,4 +85,4 @@ Source and base-to-head history scans and the extracted Debian payload scan are 
 
 Earlier remediation of the development-only helper cfg and Unix test-only constructor is retained. Strict release Clippy and the optimized production-resolution regression pass again. Release quality retains FFmpeg installation so real transformation tests run; FFmpeg, ffprobe, and yt-dlp are also available for local tests.
 
-Historical v1.0.0 release semantics were reviewed under the earlier three-platform plan. The active release contract has since been narrowed to Linux x86_64 production distribution: exact tag/main/version validation, exact-SHA quality gates, Debian package inspection and launch smoke, provenance attestation, direct GPG package signature, GPG-signed checksum verification, exact release-note extraction, protected signing credentials, and tag-only publication. Windows/macOS production signing is deferred. The documented v1.0.0 advisory exceptions do not automatically apply to any later version.
+Historical v1.0.0 release semantics were reviewed under the earlier three-platform plan. The active release contract has since been narrowed to Linux x86_64 production distribution: exact tag/main/version validation, exact-SHA quality gates, Debian package inspection and launch smoke, provenance attestation, direct GPG package signature, GPG-signed checksum verification, exact release-note extraction, protected signing credentials, and tag-only publication. Windows/macOS production signing is deferred. The v1.1.0 carry-forward is explicit and does not automatically apply to any later version.

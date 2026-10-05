@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # v1.0.0 release freeze: keep security updates enabled while suppressing
+  # v1.1.0 release freeze: keep security updates enabled while suppressing
   # routine version-update PR churn until the release is complete.
   - package-ecosystem: github-actions
     directory: /

@@ -1,6 +1,6 @@
 [package]
 name = "opendownloader"
-version = "1.0.0"
+version = "1.1.0"
 description = "openDownloader desktop application"
 authors = ["openDownloader Team"]
 edition = "2021"

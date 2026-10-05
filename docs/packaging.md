@@ -45,8 +45,8 @@ The protected `production-release` environment is the final credential boundary.
 
 ## Version and historical releases
 
-Existing public tags/releases must not be deleted or reused to make the new pipeline fit historical state. The repository currently contains historical `v1.0.0` and `v1.0.1` releases while the current development metadata still reports `1.0.0`. Therefore the next production version must be chosen explicitly and synchronized in a dedicated release/version change before creating a new tag.
+Existing public tags/releases must not be deleted or reused to make the new pipeline fit historical state. The repository contains historical `v1.0.0` and `v1.0.1` releases. The current production candidate is `v1.1.0`, and its package, Tauri, Rust host/core, and lockfile version sources are synchronized before tag creation.
 
-The security disposition in [release-remediation.md](release-remediation.md) scopes its two RustSec exceptions to `v1.0.0`. A later version must not silently inherit those exceptions; the audit policy intentionally requires re-evaluation.
+The security disposition in [release-remediation.md](release-remediation.md) records an explicit 2026-10-05 re-evaluation and owner approval carrying exactly two existing RustSec exceptions into `v1.1.0`. No other advisory is waived, and any release after `v1.1.0` falls back to strict audit until a new documented decision is made.
 
 No Windows or macOS production package is published by the current release workflow.

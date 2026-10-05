@@ -23,10 +23,18 @@ if [ -z "$host_version" ]; then
   exit 1
 fi
 
-if [ "$host_version" = "1.0.0" ]; then
-  # These exceptions were explicitly dispositioned for v1.0.0 only.
-  cargo audit     --deny warnings     --ignore RUSTSEC-2024-0370     --ignore RUSTSEC-2024-0429     --file src-tauri/Cargo.lock
-else
-  # Later releases must not silently inherit the v1.0.0 waiver.
-  cargo audit --deny warnings --file src-tauri/Cargo.lock
-fi
+case "$host_version" in
+  1.0.0|1.1.0)
+    # RUSTSEC-2024-0370 and RUSTSEC-2024-0429 were dispositioned for v1.0.0
+    # and explicitly re-evaluated/owner-approved for v1.1.0 on 2026-10-05.
+    # No later version inherits these exceptions.
+    cargo audit \
+      --deny warnings \
+      --ignore RUSTSEC-2024-0370 \
+      --ignore RUSTSEC-2024-0429 \
+      --file src-tauri/Cargo.lock
+    ;;
+  *)
+    cargo audit --deny warnings --file src-tauri/Cargo.lock
+    ;;
+esac
