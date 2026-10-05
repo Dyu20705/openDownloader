@@ -37,7 +37,7 @@ For determinism, build twice with the same `.cache/release.json` and compare `di
 
 ## Deployment
 
-`.github/workflows/pages.yml` validates relevant PRs, deploys relevant main pushes or manual dispatches, and refreshes after a successful tag-push Signed Linux release. Manual signing preflights do not qualify. Release-triggered builds check out trusted current main and do not consume upstream artifacts.
+`.github/workflows/pages.yml` validates relevant PRs and main/dev pushes. Dev and non-main manual dispatches upload a `website-preview` artifact and never deploy production. Main alone may configure/deploy Pages. Release-triggered refresh requires a successful stable-tag push from Signed Linux release in this repository, and the actual remote tag must resolve to the upstream run commit. Annotated tags compare their peeled commit. Manual signing preflights, branch pushes, malformed tags, and missing/mismatched tags do not qualify. Release-triggered builds check out trusted current main and consume no upstream code or artifacts. Dev and main have separate concurrency groups.
 
 Pages must use **Settings → Pages → Source: GitHub Actions**. Only the deploy job receives Pages/OIDC write permissions. No release credentials are accessed.
 
@@ -61,3 +61,7 @@ Only the existing cheatsheet, troubleshooting, and tool-management claims below 
 | Installed-package launch, optional Linux MediaInfo, source restrictions and sanitized retries | `docs/packaging.md`, `src-tauri/tauri.conf.json`, `docs/tool-management.md`, `PRIVACY.md`, `src-tauri/crates/core/src/url_validator.rs` |
 
 The documented `workflow_run` trigger has a narrowly scoped zizmor annotation because that required trigger is flagged categorically. Successful upstream push events must originate in this repository; the build checks out main with persisted credentials disabled, has read-only permissions, consumes no upstream artifacts, and does not access release secrets. Manual signing preflights are excluded. The existing workflow audits and release/security policies are unchanged.
+
+## Shared branding
+
+`assets/branding/opendownloader-icon.svg` is the canonical blue square/white download-arrow mark. Website dev/check/build copy the master to the favicon automatically; docs and product navigation use the same mark. Root icon generation uses the existing locked Tauri CLI; see [branding instructions](../assets/branding/README.md). These source icons are for a future owner-approved release, not replacement v1.1.0 packages.
