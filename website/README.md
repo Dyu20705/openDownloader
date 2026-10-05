@@ -2,6 +2,8 @@
 
 Static Astro + Starlight presentation and documentation for the desktop application. Hosting: `https://dyu20705.github.io/openDownloader/`. This is an independent npm project; root app dependencies and build behavior are unchanged.
 
+Website and branding tests use `*.node-tests.mjs` and the explicit Node test command below. This keeps them outside the root application's default Vitest discovery; installing only root dependencies must not require website dependencies or execute Node test suites through Vitest.
+
 ## Local development
 
 Node.js 24.21+ and npm:
