@@ -23,14 +23,7 @@ Clip and Chapter perform fast time-range cuts; boundaries can align to nearby ke
 
 ## 2. Quality Options
 
-| Quality Selector | Target Resolution | Bitrate Range | Typical File Size (10 min) |
-| :--- | :--- | :--- | :--- |
-| **Best Available (Auto)** | Up to 4K (2160p) / 8K (4320p) | 15–45 Mbps | 1.2–3.5 GB |
-| **4K Ultra HD (2160p)** | 3840 × 2160 | 12–25 Mbps | 800 MB – 1.8 GB |
-| **1440p QHD** | 2560 × 1440 | 6–12 Mbps | 400–850 MB |
-| **1080p Full HD** | 1920 × 1080 | 3–6 Mbps | 200–450 MB |
-| **720p HD** | 1280 × 720 | 1.5–3 Mbps | 100–220 MB |
-| **480p SD** | 854 × 480 | 0.8–1.5 Mbps | 50–100 MB |
+The UI offers Best Available (Auto), 2160p, 1440p, 1080p, 720p, and 480p video quality choices. Actual output depends on the available source streams and acquisition plan; these choices do not guarantee a resolution, bitrate, or file size. Audio-only acquisition uses the best available audio bitrate.
 
 ---
 
@@ -56,7 +49,7 @@ Debug builds may also search project-relative `./`, `./bin/`, and `./tools/` loc
 - **Embed Metadata (`--embed-metadata`)**: Writes title, artist/uploader, description, and tags directly into the container tags (ID3 / MP4 tags / Vorbis comments).
 - **Embed Thumbnail (`--embed-thumbnail`)**: Embeds full-resolution artwork into the file so file managers (Windows Explorer, Finder) display cover art.
 - **Embed Chapters (`--embed-chapters`)**: Injects timestamp markers for videos with multiple segments.
-- **Trim Filenames**: Automatically limits output filename length (default: 180 characters) to prevent Windows MAX_PATH (260 char) filesystem errors.
+- **Filename sanitization**: The backend sanitizes filenames and uses a default 180-character limit. There is no exposed filename-trimming toggle in the current Settings UI; a filename limit alone does not guarantee that every full output path fits platform limits.
 - **Resource handling**: One download is active at a time; progress updates and diagnostic retention are bounded. See [performance characteristics](performance.md) for the exact limits and their scope.
 
 ---
@@ -66,17 +59,21 @@ Debug builds may also search project-relative `./`, `./bin/`, and `./tools/` loc
 | Issue / Error | Cause | Resolution |
 | :--- | :--- | :--- |
 | **"Invalid or unsupported URL"** | The URL is malformed or from an unsupported service. | Ensure the link starts with `https://` and points to a supported video/audio page. |
-| **"FFmpeg missing or damaged"** | FFmpeg binary was not found or failed hash check. | Open **Engine Tools** from the header menu and click **Install / Repair**. |
-| **"Write permission denied"** | Target output directory is read-only or in a protected system folder. | Open **Settings** and set the download folder to `D:\Videos`, `D:\Music`, or your user `Downloads` folder. |
+| **"FFmpeg missing or damaged"** | FFmpeg binary was not found or failed hash check. | Open **Engine Tools** from the header menu and use **Install**, **Update**, or **Repair** for the affected tool. |
+| **"Write permission denied"** | Target output directory is read-only or in a protected system folder. | Choose a writable folder with **Save to → Browse**, or update **Default Download Folder** in Settings. On Linux, a folder under your home directory is a suitable starting point. |
 | **"Connection aborted / Geo-restricted"** | The media is blocked in your region or requires age verification. | Check the webpage in your browser to confirm availability. |
-| **"Download cancelled"** | User pressed the cancel button. | Click **Try Again** to restart the download. |
+| **"Download cancelled"** | User pressed the cancel button. | Open **History** and click **Retry**. This creates a new job and output folder, retaining old partial files rather than automatically resuming them. |
 
 ---
 
-## 6. Keyboard Shortcuts
+## 6. Queue and history
+
+One download runs at a time. Additional requests enter a durable FIFO queue. Open **History** to view jobs, cancel a queued request, open a completed file, or show it in its folder. Failed, cancelled, and interrupted jobs offer **Retry**, which creates a new attempt and output folder. After a restart, queued and in-flight jobs become Interrupted. Sanitized source URLs may require pasting the original URL again. See [troubleshooting](troubleshooting.md) and [privacy](../PRIVACY.md).
+
+## 7. Keyboard Shortcuts
 
 - `Ctrl + V`: Paste URL into the input field.
 - `Enter` (in URL field): Trigger media analysis.
-- `Tab` / `Shift + Tab`: Navigate cleanly across controls in order: `URL → Analyze → Operation → Profile → Quality → Folder → Download`.
+- `Tab` / `Shift + Tab`: Navigate the current UI; the exact order depends on the selected operation and enabled controls.
 - `Space` / `Enter`: Activate buttons or select operation/profile choices.
 - `Escape`: Close any open dialog, modal, or drawer.

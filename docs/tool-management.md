@@ -10,7 +10,7 @@ The app installs tools into its per-user tool directory, and verifies each downl
 | FFmpeg / ffprobe | 9.0.2 | Yes | Yes | Yes |
 | MediaInfo CLI | 26.05 | Yes | No | No |
 
-MediaInfo is optional. Other operating system architectures do not have managed artifacts in the current catalog; users can configure compatible executables. Release packages target only Windows x86_64, Linux x86_64, and Intel macOS.
+MediaInfo is optional. Other operating system architectures do not have managed artifacts in the current catalog; users can configure compatible executables. Production distribution targets Linux x86_64 Debian packages only. Windows x86_64 and Intel macOS have unsigned CI packaging/portability checks, not current production downloads. Managed tool availability does not establish application production support.
 
 ## Supply-chain notes
 
