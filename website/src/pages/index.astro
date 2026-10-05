@@ -1,0 +1,30 @@
+---
+import Site from '../layouts/Site.astro';
+import { path, repository, status } from '../lib';
+const steps = [
+  ['01', 'Inspect', 'Paste a media URL and analyze the available streams, chapters, captions, and source metadata.'],
+  ['02', 'Review', 'Choose an operation, output profile, quality, and destination. Review the acquisition plan before starting.'],
+  ['03', 'Download', 'Run the job, inspect its result, and find the output in your local history.'],
+];
+const features = [
+  ['Video & audio', 'Acquire selected video and audio streams, or export an audio track. Output profiles express your playback or editing preference.'],
+  ['Clips & chapters', 'Select a time range or one available chapter. Fast cuts can follow nearby keyframes.'],
+  ['Captions & artwork', 'Export one subtitle language as WebVTT, including automatic captions when available, or a thumbnail as JPEG.'],
+  ['Queue & history', 'One download runs at a time. Additional jobs enter a durable queue; history is stored locally.'],
+  ['Explicit recovery', 'Retry failed, cancelled, or interrupted jobs. A retry creates a new job and output folder; it is not automatic partial-file resume.'],
+  ['Managed media tools', 'Install or repair yt-dlp and FFmpeg through the app. Managed downloads are checked against pinned SHA-256 values.'],
+];
+---
+<Site title="Inspect before you download" description="A Linux desktop application for inspecting media URLs, reviewing acquisition plans, and downloading video, audio, clips, captions, and artwork.">
+  <div class="hero">
+    <p class="eyebrow">Local desktop utility · Linux x86_64</p>
+    <h1>Download media.<br />Know the plan first.</h1>
+    <p class="lede">openDownloader turns a media URL into a reviewable acquisition plan. Choose what to keep, how to export it, and where it goes.</p>
+    <div class="actions"><a class="button primary" href={path('download/')}>Download for Linux</a><a class="button" href={path('docs/')}>Documentation</a><a href={repository}>View on GitHub ↗</a></div>
+    <p class="fine">Production distribution targets a Debian package on Linux x86_64. Check the Download page for verified release availability.</p>
+  </div>
+  <section aria-labelledby="workflow"><p class="eyebrow">A deliberate workflow</p><h2 id="workflow">Inspect → Review → Download</h2><div class="grid">{steps.map(([number, title, description]) => <div class="step"><span class="number">{number}</span><h3>{title}</h3><p>{description}</p></div>)}</div></section>
+  <section aria-labelledby="capabilities"><h2 id="capabilities">Keep what you need.</h2><p class="section-intro">One media item per job. Available formats and operations depend on the source. Whole-playlist downloading is not supported.</p><div class="grid two">{features.map(([title, description]) => <div><h3>{title}</h3><p>{description}</p></div>)}</div><a href={path('docs/user-guide/')}>Read the user guide →</a></section>
+  <section aria-labelledby="trust"><p class="eyebrow">Engineering you can inspect</p><h2 id="trust">Clear boundaries. Visible evidence.</h2><div class="grid two"><div><p>Media tools run through structured process arguments. Sensitive URL details are redacted from diagnostics and sanitized before history is persisted.</p><a href={path('security/')}>Security & privacy →</a></div><div><p>The production release workflow smoke-tests the Debian package, signs the package and checksum manifest with GPG, and creates a GitHub provenance attestation.</p><a href={path('download/#verification')}>How to verify a release →</a></div></div></section>
+  <section aria-labelledby="project-status"><h2 id="project-status">Project status</h2><div class="status"><p>{status.text}</p></div><p class="fine">Windows x86_64 and Intel macOS are portability/unsigned-packaging targets, not current production downloads.</p></section>
+</Site>

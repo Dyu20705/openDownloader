@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /openDownloader/
+Sitemap: https://dyu20705.github.io/openDownloader/sitemap-index.xml

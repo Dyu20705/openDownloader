@@ -1,0 +1,6 @@
+---
+import Header from '@astrojs/starlight/components/Header.astro';
+import Navigation from './Navigation.astro';
+---
+<div class="docs-navigation"><Navigation /></div>
+<Header {...Astro.props}><slot /></Header>

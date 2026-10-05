@@ -1,0 +1,5 @@
+.astro/
+.cache/
+src/content/docs/
+# The app's root ignore rules exclude *.ts; website source must remain tracked.
+!src/**/*.ts

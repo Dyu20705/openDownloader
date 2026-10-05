@@ -1,0 +1,7 @@
+---
+import Site from '../layouts/Site.astro';
+import { path } from '../lib';
+---
+<Site noindex title="Page not found" description="This openDownloader page could not be found.">
+  <div class="hero prose"><p class="eyebrow">404</p><h1>Page not found</h1><p>The address may have changed. Start with the homepage or documentation.</p><div class="actions"><a class="button primary" href={path()}>Home</a><a class="button" href={path('docs/')}>Documentation</a></div></div>
+</Site>

@@ -1,0 +1,10 @@
+---
+import Site from '../layouts/Site.astro';
+import { metadata, path, repository } from '../lib';
+---
+<Site title="Releases" description="Verified production release status and historical GitHub releases for openDownloader.">
+  <div class="hero prose"><p class="eyebrow">Release status</p><h1>Releases</h1><p class="lede">Published assets are distinct from source versions and release candidates.</p></div>
+  <section class="prose"><h2>Current production distribution</h2>{metadata.productionRelease ? <p><a href={metadata.productionRelease.releaseUrl}>{metadata.productionRelease.tag}</a> has the complete Linux x86_64 Debian asset set required by the current release contract. Verify it before installation.</p> : <p>{metadata.sourceStatus === 'ok' ? 'No qualifying signed Debian production release was found at build time.' : 'Release information could not be obtained for this build.'}</p>}<div class="actions"><a class="button" href={path('download/')}>Download & verification</a><a href={`${repository}/releases`}>See GitHub Releases ↗</a></div></section>
+  {metadata.latestPublicRelease && <section class="prose"><h2>{metadata.latestPublicRelease.historical ? 'Historical public release' : 'Newest public release'}</h2><p><a href={metadata.latestPublicRelease.releaseUrl}>{metadata.latestPublicRelease.tag}</a> · Published {metadata.latestPublicRelease.publishedAt.slice(0, 10)}</p>{metadata.latestPublicRelease.historical && <p>This historical asset set does not satisfy the current signed Debian production contract. It is not offered as the primary production download.</p>}</section>}
+  <section class="prose"><h2>Platform contract</h2><p>Linux x86_64 Debian packages are the production distribution target. Windows x86_64 and Intel macOS remain unsigned packaging/portability checks; there are no current production downloads for those platforms.</p><p>Version numbers in package manifests do not establish that a release was published. All version and asset links on these pages come from one build-time metadata snapshot.</p></section>
+</Site>

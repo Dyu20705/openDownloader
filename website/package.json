@@ -1,0 +1,40 @@
+{
+  "name": "opendownloader-website",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.21.0"
+  },
+  "scripts": {
+    "release:fetch": "node scripts/fetch-release.mjs",
+    "generate": "node scripts/generate-docs.mjs",
+    "predev": "npm run generate",
+    "dev": "astro dev",
+    "precheck": "npm run generate",
+    "check": "astro check",
+    "prebuild": "npm run generate",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test scripts/*.test.mjs",
+    "check:links": "node scripts/check-output.mjs",
+    "validate": "npm run check && npm test && npm run build && npm run check:links"
+  },
+  "dependencies": {
+    "astro": "7.3.5",
+    "@astrojs/starlight": "0.42.5",
+    "@astrojs/markdown-remark": "7.3.0",
+    "@astrojs/sitemap": "3.7.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "typescript": "5.9.3",
+    "unified": "11.0.5",
+    "remark-parse": "11.0.0",
+    "remark-stringify": "11.0.0",
+    "unist-util-visit": "5.0.0",
+    "parse5": "8.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

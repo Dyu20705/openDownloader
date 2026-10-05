@@ -1,0 +1,21 @@
+---
+import { metadata, repository } from '../lib';
+const release = metadata.productionRelease;
+const name = release?.deb.name ?? '<package>.deb';
+const commands = `gpg --import RELEASE-GPG-PUBLIC-KEY.asc\ngpg --verify SHA256SUMS.asc SHA256SUMS\nsha256sum -c SHA256SUMS\ngpg --verify '${name}.asc' '${name}'`;
+const provenance = `gh attestation verify '${name}' --repo Dyu20705/openDownloader`;
+---
+<div class="verification">
+  <p>Download the Debian package, its exact <code>.asc</code> signature, <code>SHA256SUMS</code>, <code>SHA256SUMS.asc</code>, and <code>RELEASE-GPG-PUBLIC-KEY.asc</code> from the same official release. Put them in one directory.</p>
+  {!release && <p class="status"><strong>Command templates:</strong> a qualifying Debian release is not yet known. Replace <code>&lt;package&gt;.deb</code> with the exact published filename; these are not current asset links.</p>}
+  <h3>Integrity and authenticity</h3>
+  <p>Use GPG to authenticate the checksum manifest before checking downloaded bytes. Verify the package signature as well.</p>
+  <pre tabindex="0" role="region" aria-label="Checksum and GPG verification commands"><code>{commands}</code></pre>
+  <p>Stop if a signature or checksum check fails. SHA-256 confirms the bytes match the authenticated manifest. GPG confirms that the signature was made with the corresponding release key.</p>
+  <p>Importing a key from the same release does not independently establish who owns it. Compare its fingerprint against a separately trusted project identity before trusting the signature. A signature does not prove that software is vulnerability-free.</p>
+  <h3>Build provenance</h3>
+  <p>The production workflow creates an attestation for the staged Debian artifact. With GitHub CLI installed and authenticated where required, verify its provenance separately:</p>
+  <pre tabindex="0" role="region" aria-label="Provenance verification command"><code>{provenance}</code></pre>
+  <p>Release asset names alone do not prove that an attestation exists. Review the verification result and its repository/workflow identity. <a href="https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations/verifying-the-provenance-of-a-build">GitHub’s provenance verification guide</a> explains the evidence.</p>
+  <p><a href={`${repository}/blob/main/docs/packaging.md`}>Canonical packaging and release contract →</a></p>
+</div>

@@ -1,0 +1,32 @@
+---
+import Navigation from '../components/Navigation.astro';
+import '../styles/site.css';
+import { path, repository } from '../lib';
+interface Props { title: string; description: string; noindex?: boolean }
+const { title, description, noindex = false } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} · openDownloader</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={url} />
+  <meta property="og:title" content={`${title} · openDownloader`} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={url} />
+  {noindex && <meta name="robots" content="noindex,follow" />}
+  <meta name="theme-color" content="#111416" />
+  <link rel="icon" type="image/svg+xml" href={path('branding/favicon.svg')} />
+  <link rel="sitemap" href={path('sitemap-index.xml')} />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header><Navigation /></header>
+  <main id="main"><slot /></main>
+  <footer><a class="brand" href={path()}>openDownloader</a><p>A local desktop utility. Open source under the MIT License.</p><div><a href={path('docs/privacy/')}>Privacy</a><a href={repository}>Source code</a><a href={`${repository}/blob/main/LICENSE`}>License</a></div></footer>
+</body>
+</html>
